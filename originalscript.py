@@ -8810,8 +8810,8 @@ H_sparse=load_npz('sparse_matrix_200000.npz')
 vector=np.load('raw_string_200000.npz')['arr_0']
 
 # # =Row Coordinates==============
-m=H_sparse.shape[0]
-rows = []
+m=H_sparse.shape[0] # versical demension of parity check matrix
+rows = []# list containing lists of positions of non-zero elements for every row
 c_lil = H_sparse.tolil().astype(dtype=np.uint8).rows
 for r in range(m):  # For every row of the VN-to-CN messages array
     rows.append(c_lil[r]) 
@@ -8820,15 +8820,15 @@ for r in range(m):  # For every row of the VN-to-CN messages array
 data_type = np.uint32
 r = H_sparse.tocoo().row.astype(data_type)
 c = H_sparse.tocoo().col.astype(np.uint32)
-vals={}
+vals={}# dictionary with the coordinates of the non-zero elements as 'keys' and the correspnding elements as entries
 for i in range(len(r)):
     vals[(r[i], c[i])] = H_sparse[r[i], c[i]]
     
     
 # Syndrom Calulation (encoding)   
-s = np.zeros(m, dtype=np.uint8)  # The highest possible value is 255, which allows a maximum GF of (2^8)
-for i in range(0, m):
-    for j in range(0, len(rows[i])):
-        mul = tM[vals[(i, rows[i][j])]][vector[rows[i][j]]]  # Multiplication step
-        s[i] = tA[s[i]][mul]  # Addition step
+s = np.zeros(m, dtype=np.uint8)  # This is the syndrome, i.e., result of matrix multiplication (The highest possible value is 255, which allows a maximum GF of (2^8))
+for i in range(0, m):# for every row of the matrix
+    for j in range(0, len(rows[i])): # for every non-zero element of the matrix 
+        mul = tM[vals[(i, rows[i][j])]][vector[rows[i][j]]]  # Multiplication step with the corresponding element of the string
+        s[i] = tA[s[i]][mul]  # Addition step with the previously multiplied elements in the same row
 print(s)

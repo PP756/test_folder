@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Dec  9 09:33:03 2024
+
+@author: papkp
+"""
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -10,7 +17,7 @@ import numpy as np
 import scipy.sparse
 from scipy.sparse import save_npz, load_npz
 import time
-# Multiplication and Addition Rules
+
 
 def precomputed_addition_table(f):
     """
@@ -66,13 +73,18 @@ def precomputed_multiplication_table(f):
         raise ValueError("This Galois field is not currently supported.")
     return table
 
-tA=precomputed_addition_table(2**4)
-tM=precomputed_multiplication_table(2**4)
 # =====Load DATA=================
 H_sparse=load_npz('135700-0.75-2-8.npz')
 or_vector=np.load('raw_stringhomodyne135700.0.npz')['arr_0']
 n=H_sparse.shape[1]
 vector = np.resize(or_vector, n)
+
+
+
+
+tA=precomputed_addition_table(2**4)
+tM=precomputed_multiplication_table(2**4)
+
 
 # # =Row Coordinates==============
 m=H_sparse.shape[0]
@@ -89,11 +101,13 @@ vals={}
 for i in range(len(r)):
     vals[(r[i], c[i])] = H_sparse[r[i], c[i]]
     
-    
-# Syndrom Calulation (encoding)   
-s = np.zeros(m, dtype=np.uint8)  # The highest possible value is 255, which allows a maximum GF of (2^8)
-for i in range(0, m):
-    for j in range(0, len(rows[i])):
-        mul = tM[vals[(i, rows[i][j])]][vector[rows[i][j]]]  # Multiplication step
-        s[i] = tA[s[i]][mul]  # Addition step
-print(s)
+  
+def MxMultiG(vals,rows,vector): 
+    # Syndrom Calulation (encoding)   
+    s = np.zeros(m, dtype=np.uint8)  # The highest possible value is 255, which allows a maximum GF of (2^8)
+    for i in range(0, m):
+        for j in range(0, len(rows[i])):
+           mul = tM[vals[(i, rows[i][j])]][vector[rows[i][j]]]  # Multiplication step
+           s[i] = tA[s[i]][mul]  # Addition step
+    return s
+print(MxMultiG(vals,rows,vector))

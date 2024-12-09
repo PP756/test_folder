@@ -2,7 +2,7 @@ import time
 import subprocess
 
 # Define the script to benchmark
-SCRIPT_NAME = "originalscript.py"  # Replace with the actual name of the script
+SCRIPT_NAME = "MxMultiGalois.py"  # Replace with the actual name of the script
 
 def execute_script():
     """Run the script and measure its execution time."""
